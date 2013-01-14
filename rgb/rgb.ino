@@ -1,3 +1,7 @@
+// Pan through the hues of RGB led
+//
+// Connect led (+) pins, with 220-ohm resistor in front of each, to PWM pins 9-11
+// Connect led (-) pin to GND
 
 const int low = 0;
 const int high = 255;
