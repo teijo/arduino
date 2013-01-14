@@ -1,64 +1,41 @@
 
-int low = 0;
-int high = 255;
-int middle = (high - low) / 2;
+const int low = 0;
+const int high = 255;
+const int middle = (high - low) / 2;
 
-#define RED 0
-#define GREEN 1
-#define BLUE 2
+void setup() { }
 
-#define OUT 0
-#define IN 1
-
-int rgb[3] = { high, low, low };
-int hold = RED;
-
-void setup()  { 
-  Serial.begin(9600);
-} 
-
-void led(int red, int green, int blue) {
-  analogWrite(11, red);
-  analogWrite(10, blue);
-  analogWrite(9,  green); 
+void led(int* rgb) {
+  analogWrite(11, rgb[0]);
+  analogWrite(10, rgb[1]);
+  analogWrite(9,  rgb[2]);
 }
 
-void blend(int intensity) {
-  int next = (hold + 1) % 3;
-  int prev = (hold + 2) % 3;
+void blend(int intensity, int* rgb, int hold) {
+  int* next = &rgb[(hold + 1) % 3];
+  int* prev = &rgb[(hold + 2) % 3];
+
   rgb[hold] = high;
-  
+
   if (intensity < middle) {
-    rgb[next] = low;
-    rgb[prev] = high - intensity * 2;
+    *next = low;
+    *prev = high - intensity * 2;
   }
   else {
-    rgb[next] = (intensity - middle) * 2;
-    rgb[prev] = low;
+    *next = (intensity - middle) * 2;
+    *prev = low;
   }
 }
 
-void pr(int *c) {
-  Serial.print(c[RED]); 
-  Serial.print(":");
-  Serial.print(c[GREEN]); 
-  Serial.print(":");
-  Serial.print(c[BLUE]); 
-  Serial.println();
-}
+void loop()  {
+  static int rgb[3] = { high, low, low };
+  static int hold = 0;
 
-void loop()  { 
-  for(int i = low ; i < high; i += 4) {
-    pr(rgb);
-    blend(i);
-    led(rgb[0], rgb[1], rgb[2]);
-    delay(50);                            
-  } 
+  for (int i = low ; i < high; i++) {
+    blend(i, rgb, hold);
+    led(rgb);
+    delay(5);
+  }
+
   hold = (hold + 1) % 3;
 }
-
-
-
-
-
-
